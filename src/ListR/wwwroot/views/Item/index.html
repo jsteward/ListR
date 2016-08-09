@@ -1,0 +1,22 @@
+﻿<div hm-dragend="$ctrl.dragEnd($event)"
+     hm-dragleft="$ctrl.dragLeft($event)"
+     ng-style="$ctrl.style"
+     class="swipe">
+    <div class="item-name-wrapper" >
+        {{$ctrl.item.name}}
+    </div>
+    <div class="item-quantity-add">
+        <button type="button" class="btn btn-default btn-circle btn-lg" ng-click="$ctrl.quantityUp($event)">
+            <i class="glyphicon glyphicon-chevron-up"></i>
+        </button>
+    </div>
+    <div class="item-quantity">
+        {{$ctrl.item.quantity}}
+    </div>
+    <div class="item-quantity-sub
+         ">
+        <button type="button" class="btn btn-default btn-circle btn-lg" ng-click="$ctrl.quantityDown($event)">
+            <i class="glyphicon glyphicon-chevron-down"></i>
+        </button>
+    </div>
+</div>

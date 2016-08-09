@@ -1,0 +1,12 @@
+﻿<ion-item ng-repeat="item in itemCtrl.items">
+    <div class="item item-input-inset" style="cursor: pointer" on-swipe-left="itemCtrl.removeItem(item)">
+        <label class="item-input-wrapper" style="background: none; cursor: pointer">{{item.name}}</label>
+        <button class="button button-small button-balanced">
+            <i class="icon ion-plus-round"></i>
+        </button>
+        <span style="align-content: center; padding: 10px">{{item.quantity}}</span>
+        <button class="button button-small button-assertive" style="margin: 0;">
+            <i class="icon ion-minus-round"></i>
+        </button>
+    </div>
+</ion-item>

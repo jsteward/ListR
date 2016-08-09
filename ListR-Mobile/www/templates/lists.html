@@ -1,0 +1,21 @@
+<ion-view view-title="Lists">
+    <ion-content>
+        <ion-list>
+
+            <div class="item item-input-inset">
+                <label class="item-input-wrapper">
+                    <input type="text" placeholder="New List" ng-model="listsCtrl.newListName">
+                </label>
+                <button class="button button-medium button-balanced" ng-click="listsCtrl.quickAddList()">
+                    Add
+                </button>
+            </div>
+
+            <ion-item ng-repeat="list in listsCtrl.lists" href="#/app/list/{{list.id}}">
+                <div class="item item-input-inset" style="cursor: pointer" on-swipe-left="listsCtrl.removeList(list)">
+                    <label class="item-input-wrapper" style="background: none; cursor: pointer">{{list.listName}}</label>
+                </div>
+            </ion-item>
+        </ion-list>
+    </ion-content>
+</ion-view>
