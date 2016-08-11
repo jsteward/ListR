@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ListR.Controllers
 {
     [Route("api/[controller]")]
-    public class ItemsController : ListRController
+    public class ItemsController : ListRControllerBase
     {
         public ItemsController(IListRContext dbContext) : base(dbContext)
         {

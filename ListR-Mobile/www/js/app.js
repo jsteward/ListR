@@ -5,39 +5,51 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
 angular.module('listr', [
-    'ionic',
-    'starter.controllers',
-    'listr.lists',
-    'listr.itemList',
-    'ngResource'
-])
+        'ionic',
+        'starter.controllers',
+        'listr.lists',
+        'listr.itemList',
+        'listr.login',
+        'ngResource'
+    ])
+    .run(function($ionicPlatform, $timeout, $state, $ionicLoading) {
+        $ionicPlatform.ready(function() {
+            // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
+            // for form inputs)
+            if (cordova.platformId === 'ios' && window.cordova && window.cordova.plugins.Keyboard) {
+                cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+                cordova.plugins.Keyboard.disableScroll(true);
 
-.run(function ($ionicPlatform) {
-    $ionicPlatform.ready(function () {
-        // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-        // for form inputs)
-        if (cordova.platformId === 'ios' && window.cordova && window.cordova.plugins.Keyboard) {
-            cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-            cordova.plugins.Keyboard.disableScroll(true);
+            }
+            if (window.StatusBar) {
+                // org.apache.cordova.statusbar required
+                StatusBar.styleDefault();
+            }
 
-        }
-        if (window.StatusBar) {
-            // org.apache.cordova.statusbar required
-            StatusBar.styleDefault();
-        }
-    });
-})
+            $ionicLoading.show({
+                template: 'Loading...'
+            });
+            //here is where the login info will go
+            $timeout(function() {
+                $state.go('login');
+                $ionicLoading.hide();
+            }, 1000);
+        });
+    })
+    .value('user', {})
 
 .config(function ($stateProvider, $urlRouterProvider) {
     $stateProvider
-
-      .state('app', {
+        .state('init', {
+            url: '/init',
+            template: ''
+        })
+    .state('app', {
           url: '/app',
           abstract: true,
           templateUrl: 'templates/menu.html',
           controller: 'AppCtrl'
       })
-
     .state('app.search', {
         url: '/search',
         views: {
@@ -46,7 +58,6 @@ angular.module('listr', [
             }
         }
     })
-
     .state('app.browse', {
         url: '/browse',
         views: {
@@ -55,7 +66,7 @@ angular.module('listr', [
             }
         }
     })
-      .state('app.lists', {
+    .state('app.lists', {
           url: '/lists',
           views: {
               'menuContent': {
@@ -65,7 +76,6 @@ angular.module('listr', [
               }
           }
       })
-
     .state('app.single', {
         url: '/list/:listId',
         views: {
@@ -75,7 +85,13 @@ angular.module('listr', [
                 controllerAs: 'itemCtrl'
             }
         }
+    })
+    .state('login', {
+        url: '/login',
+        templateUrl: 'templates/login.html',
+        controller: 'loginCtrl',
+        controllerAs: 'loginCtrl'
     });
     // if none of the above states are matched, use this as the fallback
-    $urlRouterProvider.otherwise('/app/lists');
+    $urlRouterProvider.otherwise('/init');
 });

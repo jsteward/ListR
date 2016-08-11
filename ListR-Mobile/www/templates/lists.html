@@ -1,4 +1,5 @@
-<ion-view view-title="Lists">
+<ion-view view-title="{{$scope.loginData.firstName}} Lists">
+    
     <ion-content>
         <ion-list>
 
@@ -10,9 +11,8 @@
                     Add
                 </button>
             </div>
-
             <ion-item ng-repeat="list in listsCtrl.lists" href="#/app/list/{{list.id}}">
-                <div class="item item-input-inset" style="cursor: pointer" on-swipe-left="listsCtrl.removeList(list)">
+                <div class="item item-input-inset"  on-swipe-left="listsCtrl.removeList(list)">
                     <label class="item-input-wrapper" style="background: none; cursor: pointer">{{list.listName}}</label>
                 </div>
             </ion-item>

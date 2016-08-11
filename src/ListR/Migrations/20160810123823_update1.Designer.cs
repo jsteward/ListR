@@ -8,9 +8,10 @@ using ListR.Models;
 namespace ListR.Migrations
 {
     [DbContext(typeof(ListRContext))]
-    partial class ListRContextModelSnapshot : ModelSnapshot
+    [Migration("20160810123823_update1")]
+    partial class update1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
@@ -61,13 +62,7 @@ namespace ListR.Migrations
 
                     b.Property<string>("FacebookId");
 
-                    b.Property<string>("FirstName");
-
-                    b.Property<string>("LastName");
-
                     b.Property<string>("Password");
-
-                    b.Property<string>("UUID");
 
                     b.HasKey("Id");
 

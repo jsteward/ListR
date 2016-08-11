@@ -1,0 +1,1 @@
+﻿angular.module('listr.user', ['listr.user.controller']);

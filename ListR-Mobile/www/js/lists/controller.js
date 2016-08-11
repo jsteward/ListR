@@ -1,16 +1,24 @@
 ﻿angular.module('listr.lists.controller', [])
-  .controller('listsCtrl', function ($scope, listsService) {
+  .controller('listsCtrl', function ($scope, listsService, user, $ionicLoading) {
         let ctrl = this;
         ctrl.lists = [];
-        init();
         ctrl.newListName = "";
         ctrl.addList = addList;
         ctrl.quickAddList = quickAddList;
         ctrl.removeList = removeList;
 
+        $scope.$on('$ionicView.enter', init);
+
         function init() {
-            listsService.getAllLists().then((resp) => { ctrl.lists = resp; });
+            $ionicLoading.show({
+                template: 'Loading...'
+            });
+            listsService.getAllLists(user).then((resp) => {
+                ctrl.lists = resp;
+                $ionicLoading.hide();
+            });
         }
+
 
         function quickAddList() {
             if (ctrl.newListName !== "" && !_.find(ctrl.lists, { name: ctrl.newListName })) {

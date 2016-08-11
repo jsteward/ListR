@@ -1,4 +1,10 @@
 <ion-view view-title="Items">
+    <ion-nav-buttons side="primary">
+        <button class="button button-clear" ng-click="itemCtrl.addUsersToList()">
+            <i class="icon ion-person-add"></i>
+        </button>
+    </ion-nav-buttons>
+    
     <ion-content>
         <ion-list>
             <div class="item item-input-inset">
@@ -9,9 +15,6 @@
                     Add
                 </button>
             </div>
-
-
-
             <ion-item ng-repeat="item in itemCtrl.items">
                 <div class="item item-input-inset" style="cursor: pointer" on-swipe-left="itemCtrl.removeItem(item)">
                     <label class="item-input-wrapper" style="background: none; cursor: pointer">{{item.name}}</label>

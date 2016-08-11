@@ -8,9 +8,10 @@ using ListR.Models;
 namespace ListR.Migrations
 {
     [DbContext(typeof(ListRContext))]
-    partial class ListRContextModelSnapshot : ModelSnapshot
+    [Migration("20160811162617_update2")]
+    partial class update2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")

@@ -10,5 +10,7 @@ namespace ListR.Models
         public int Id { get; set; }
         public string ListName { get; set; }
         public List<Item> Items { get; set; }
+        public int ListOwnerId { get; set; }
+        public ICollection<UserList> UserLists { get; set; }
     }
 }

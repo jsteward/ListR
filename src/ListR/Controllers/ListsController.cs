@@ -4,11 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using ListR.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ListR.Controllers
 {
     [Route("api/[controller]")]
-    public class ListsController : ListRController
+    public class ListsController : ListRControllerBase
     {
         public ListsController(IListRContext dbContext) : base(dbContext)
         {
@@ -16,9 +17,11 @@ namespace ListR.Controllers
         }
         // GET api/lists
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetAll(int userId)
         {
-            return new ObjectResult(DbContext.Lists.ToList());
+            var usersLists = DbContext.UserList.Where(userList => userList.UserId == userId).Select(list => list.List);
+
+            return new ObjectResult(usersLists);
         }
 
         // GET api/lists/5
@@ -33,7 +36,10 @@ namespace ListR.Controllers
         [Route("/api/lists/")]
         public IActionResult Post([FromBody]List list)
         {
+            list.ListOwnerId = 1;
             DbContext.Lists.Add(list);
+            DbContext.SaveChanges();
+            DbContext.UserList.Add(new UserList {ListId = list.Id, UserId = 1});
             DbContext.SaveChanges();
             return new ObjectResult(list);
         }
@@ -55,25 +61,16 @@ namespace ListR.Controllers
         [HttpDelete("{listId}")]
         public void Delete(int listId)
         {
-            var list = DbContext.Lists.FirstOrDefault(x => x.Id == listId);
+            var list = DbContext.Lists.Include(x=>x.Items).FirstOrDefault(x => x.Id == listId);
             if (list!=null)
             {
+                foreach (var item in list.Items)
+                {
+                    DbContext.Remove(item);
+                }
                 DbContext.Remove(list);
                 DbContext.SaveChanges();
             }
         }
-    }
-
-
-    public class ListRController : Controller
-    {
-        public readonly IListRContext DbContext;
-
-        public ListRController(IListRContext dbContext)
-        {
-            DbContext = dbContext;
-        }
-
-        
     }
 }

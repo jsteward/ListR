@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace ListR.Models
 {
@@ -13,6 +6,8 @@ namespace ListR.Models
     {
         DbSet<Item> Items { get; set; }
         DbSet<List> Lists { get; set; }
+        DbSet<User> Users { get; set; }
+        DbSet<UserList> UserList { get; set; }
         void SaveChanges();
         void Remove<T>(T entity) where T : class;
     }
@@ -34,6 +29,10 @@ namespace ListR.Models
 
         public DbSet<List> Lists { get; set; }
 
+        public DbSet<User> Users { get; set; }
+
+        public DbSet<UserList> UserList { get; set; }
+
         public new void SaveChanges()
         {
             base.SaveChanges();
@@ -44,5 +43,10 @@ namespace ListR.Models
             base.Remove(entity);
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<UserList>().HasKey(x => new { x.ListId, x.UserId });
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

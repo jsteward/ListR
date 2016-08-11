@@ -1,6 +1,6 @@
 ﻿angular.module('listr.itemList.controller', [])
 
-.controller('itemCtrl', function ($scope, $stateParams, itemListService) {
+.controller('itemCtrl', function ($scope, $stateParams, itemListService, $ionicLoading) {
     let ctrl = this;
     var delay = 200;
 
@@ -9,8 +9,9 @@
     ctrl.removeItem = removeItem;
     ctrl.quickAddItem = quickAddItem;
     ctrl.addItem = addItem;
+    ctrl.addUsersToList = addUsersToList;
 
-    init();
+    $scope.$on('$ionicView.enter', init);
 
     ctrl.quantityUp = _.throttle(quantityUp, delay);
     ctrl.quantityDown = _.throttle(quantityDown, delay);
@@ -43,8 +44,14 @@
     }
 
     function init() {
+        $ionicLoading.show({
+            template: 'Loading...'
+        });
         $scope.listCanSwipe = true;
-        itemListService.getAll($stateParams.listId).then((resp) => { ctrl.items = resp; });
+        itemListService.getAll($stateParams.listId).then((resp) => {
+            $ionicLoading.hide();
+            ctrl.items = resp;
+        });
     }
 
     function quantityUp(item) {
@@ -61,5 +68,8 @@
         itemListService.editItem(item);
     }
 
+    function addUsersToList() {
+        console.log('user added to list ',$stateParams.listId);
+    };
 
-});
+    });

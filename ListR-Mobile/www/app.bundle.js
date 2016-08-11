@@ -5,39 +5,51 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
 angular.module('listr', [
-    'ionic',
-    'starter.controllers',
-    'listr.lists',
-    'listr.itemList',
-    'ngResource'
-])
+        'ionic',
+        'starter.controllers',
+        'listr.lists',
+        'listr.itemList',
+        'listr.login',
+        'ngResource'
+    ])
+    .run(function($ionicPlatform, $timeout, $state, $ionicLoading) {
+        $ionicPlatform.ready(function() {
+            // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
+            // for form inputs)
+            if (cordova.platformId === 'ios' && window.cordova && window.cordova.plugins.Keyboard) {
+                cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+                cordova.plugins.Keyboard.disableScroll(true);
 
-.run(function ($ionicPlatform) {
-    $ionicPlatform.ready(function () {
-        // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-        // for form inputs)
-        if (cordova.platformId === 'ios' && window.cordova && window.cordova.plugins.Keyboard) {
-            cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-            cordova.plugins.Keyboard.disableScroll(true);
+            }
+            if (window.StatusBar) {
+                // org.apache.cordova.statusbar required
+                StatusBar.styleDefault();
+            }
 
-        }
-        if (window.StatusBar) {
-            // org.apache.cordova.statusbar required
-            StatusBar.styleDefault();
-        }
-    });
-})
+            $ionicLoading.show({
+                template: 'Loading...'
+            });
+            //here is where the login info will go
+            $timeout(function() {
+                $state.go('login');
+                $ionicLoading.hide();
+            }, 1000);
+        });
+    })
+    .value('user', {})
 
 .config(function ($stateProvider, $urlRouterProvider) {
     $stateProvider
-
-      .state('app', {
+        .state('init', {
+            url: '/init',
+            template: ''
+        })
+    .state('app', {
           url: '/app',
           abstract: true,
           templateUrl: 'templates/menu.html',
           controller: 'AppCtrl'
       })
-
     .state('app.search', {
         url: '/search',
         views: {
@@ -46,7 +58,6 @@ angular.module('listr', [
             }
         }
     })
-
     .state('app.browse', {
         url: '/browse',
         views: {
@@ -55,7 +66,7 @@ angular.module('listr', [
             }
         }
     })
-      .state('app.lists', {
+    .state('app.lists', {
           url: '/lists',
           views: {
               'menuContent': {
@@ -65,7 +76,6 @@ angular.module('listr', [
               }
           }
       })
-
     .state('app.single', {
         url: '/list/:listId',
         views: {
@@ -75,83 +85,23 @@ angular.module('listr', [
                 controllerAs: 'itemCtrl'
             }
         }
+    })
+    .state('login', {
+        url: '/login',
+        templateUrl: 'templates/login.html',
+        controller: 'loginCtrl',
+        controllerAs: 'loginCtrl'
     });
     // if none of the above states are matched, use this as the fallback
-    $urlRouterProvider.otherwise('/app/lists');
+    $urlRouterProvider.otherwise('/init');
 });
 
 angular.module('starter.controllers', [])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
-
-  // With the new view caching in Ionic, Controllers are only called
-  // when they are recreated or on app start, instead of every page change.
-  // To listen for when this page is active (for example, to refresh data),
-  // listen for the $ionicView.enter event:
-  //$scope.$on('$ionicView.enter', function(e) {
-  //});
-
-  // Form data for the login modal
-  $scope.loginData = {};
-
-  // Create the login modal that we will use later
-  $ionicModal.fromTemplateUrl('templates/login.html', {
-    scope: $scope
-  }).then(function(modal) {
-    $scope.modal = modal;
-  });
-
-  // Triggered in the login modal to close it
-  $scope.closeLogin = function() {
-    $scope.modal.hide();
-  };
-
-  // Open the login modal
-  $scope.login = function() {
-    $scope.modal.show();
-  };
-
-  // Perform the login action when the user submits the login form
-  $scope.doLogin = function() {
-    console.log('Doing login', $scope.loginData);
-
-    // Simulate a login delay. Remove this and replace with your login
-    // code if using a login system
-    $timeout(function() {
-      $scope.closeLogin();
-    }, 1000);
-  };
+.controller('AppCtrl', function () {
 })
 
-// .controller('ListsCtrl', listCtrl)
 
-// .controller('listCtrl', function($scope, $stateParams) {
-//   $scope.items = [
-//     { name: 'Tomatoes', id: 1, quantity:2 },
-//     { name: 'Bread', id: 2, quantity:2 },
-//     { name: 'Milk', id: 3, quantity:2 },
-//     { name: 'Butter', id: 4, quantity:2 },
-//     { name: 'Salt', id: 5, quantity:2 },
-//     { name: 'Mayonaise', id: 6, quantity:2 },
-//     { name: 'Tomatoes', id: 1, quantity:2 },
-//     { name: 'Bread', id: 2, quantity:2 },
-//     { name: 'Milk', id: 3, quantity:2 },
-//     { name: 'Butter', id: 4, quantity:2 },
-//     { name: 'Salt', id: 5, quantity:2 },
-//     { name: 'Mayonaise', id: 6, quantity:2 }
-//   ];
-//
-// });
-
-
-
-
-
-// function listCtrl($scope) {
-//     $scope.lists = [
-//       { title: 'Shopping', id: 1 }
-//     ];
-// }
 
 // Platform specific overrides will be placed in the merges folder versions of this file
 //(function () {
@@ -235,7 +185,7 @@ angular.module('starter.controllers', [])
 //})();
 angular.module('listr.itemList.controller', [])
 
-.controller('itemCtrl', function ($scope, $stateParams, itemListService) {
+.controller('itemCtrl', function ($scope, $stateParams, itemListService, $ionicLoading) {
     let ctrl = this;
     var delay = 200;
 
@@ -244,8 +194,9 @@ angular.module('listr.itemList.controller', [])
     ctrl.removeItem = removeItem;
     ctrl.quickAddItem = quickAddItem;
     ctrl.addItem = addItem;
+    ctrl.addUsersToList = addUsersToList;
 
-    init();
+    $scope.$on('$ionicView.enter', init);
 
     ctrl.quantityUp = _.throttle(quantityUp, delay);
     ctrl.quantityDown = _.throttle(quantityDown, delay);
@@ -278,8 +229,14 @@ angular.module('listr.itemList.controller', [])
     }
 
     function init() {
+        $ionicLoading.show({
+            template: 'Loading...'
+        });
         $scope.listCanSwipe = true;
-        itemListService.getAll($stateParams.listId).then((resp) => { ctrl.items = resp; });
+        itemListService.getAll($stateParams.listId).then((resp) => {
+            $ionicLoading.hide();
+            ctrl.items = resp;
+        });
     }
 
     function quantityUp(item) {
@@ -296,8 +253,11 @@ angular.module('listr.itemList.controller', [])
         itemListService.editItem(item);
     }
 
+    function addUsersToList() {
+        console.log('user added to list ',$stateParams.listId);
+    };
 
-});
+    });
 
 angular.module('listr.itemList', ['listr.itemList.controller', 'listr.itemList.service']);
 
@@ -349,18 +309,26 @@ angular.module('listr.itemList', ['listr.itemList.controller', 'listr.itemList.s
 })();
 
 angular.module('listr.lists.controller', [])
-  .controller('listsCtrl', function ($scope, listsService) {
+  .controller('listsCtrl', function ($scope, listsService, user, $ionicLoading) {
         let ctrl = this;
         ctrl.lists = [];
-        init();
         ctrl.newListName = "";
         ctrl.addList = addList;
         ctrl.quickAddList = quickAddList;
         ctrl.removeList = removeList;
 
+        $scope.$on('$ionicView.enter', init);
+
         function init() {
-            listsService.getAllLists().then((resp) => { ctrl.lists = resp; });
+            $ionicLoading.show({
+                template: 'Loading...'
+            });
+            listsService.getAllLists(user).then((resp) => {
+                ctrl.lists = resp;
+                $ionicLoading.hide();
+            });
         }
+
 
         function quickAddList() {
             if (ctrl.newListName !== "" && !_.find(ctrl.lists, { name: ctrl.newListName })) {
@@ -394,41 +362,26 @@ angular.module('listr.lists', ['listr.lists.controller', 'listr.lists.service'])
 
         var url = 'http://localhost:50779/api/lists/:listId';
         var svc = this;
-
-        //var url = '/api/lists/:listId/items/:itemId';
         var settings = { cache: true, isArray: true };
 
         var resource = $resource(url, { }, { update: { method: 'PUT' } }, settings);
 
         svc.addList = addList;
 
-        //svc.editItem = editItem;
-
         svc.deleteList = deleteList;
 
         svc.getAllLists = getAllLists;
 
-        //svc.getItem = getItem;
-
         function addList(list) {
             return resource.save(list).$promise;
-        }
-
-        function editItem(item) {
-            console.log(item);
-            return resource.update(item).$promise;
-
-
         }
 
         function deleteList(list) {
             return resource.delete({ 'listId': list.id }).$promise;
         }
 
-
-
-        function getAllLists() {
-            return resource.query().$promise;
+        function getAllLists(user) {
+            return resource.query({ 'userId': user.userId }).$promise;
         }
     }
 
@@ -437,3 +390,82 @@ angular.module('listr.lists', ['listr.lists.controller', 'listr.lists.service'])
 
 })();
 
+
+angular.module('listr.login.controller', [])
+    .controller('loginCtrl', function ($scope, $ionicModal, $timeout, user, $state) {
+        let ctrl = this;
+
+        ctrl.loginData = {};
+        ctrl.login = login;
+        
+        function login() {
+            ctrl.loginData.id = 1;
+            ctrl.loginData.uuid = device.uuid;
+            // Simulate a login delay. Remove this and replace with your login
+            // code if using a login system
+
+
+            $timeout(function () {
+                var fakeUser = { firstName: 'Jacques', lastName: 'Steward', userId: 1, emailAddress: 'jacques.steward@gmail.com', FacebookId: '', uuid: device.uuid };
+                angular.extend(user, fakeUser);
+                $state.go('app.lists');
+            }, 1000);
+
+        }
+
+    });
+angular.module('listr.login', ['listr.login.controller', 'listr.login.service']);
+
+(function () {
+    function loginService($resource) {
+
+        //var url = 'http://localhost:50779/api/lists/:listId';
+        //var svc = this;
+
+        ////var url = '/api/lists/:listId/items/:itemId';
+        //var settings = { cache: true, isArray: true };
+
+        //var resource = $resource(url, {}, { update: { method: 'PUT' } }, settings);
+
+        //svc.addList = addList;
+
+        ////svc.editItem = editItem;
+
+        //svc.deleteList = deleteList;
+
+        //svc.getAllLists = getAllLists;
+
+        ////svc.getItem = getItem;
+
+        //function addList(list) {
+        //    return resource.save(list).$promise;
+        //}
+
+        //function editItem(item) {
+        //    console.log(item);
+        //    return resource.update(item).$promise;
+
+
+        //}
+
+        //function deleteList(list) {
+        //    return resource.delete({ 'listId': list.id }).$promise;
+        //}
+
+
+
+        //function getAllLists() {
+        //    return resource.query().$promise;
+        //}
+    }
+
+    angular.module('listr.login.service', [])
+        .service('loginService', loginService);
+
+})();
+angular.module('listr.user.controller', [])
+    .controller('userCtrl', function($scope) {
+        let ctrl = this;
+    });
+
+angular.module('listr.user', ['listr.user.controller']);
