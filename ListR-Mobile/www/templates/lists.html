@@ -1,8 +1,7 @@
 <ion-view view-title="{{$scope.loginData.firstName}} Lists">
     
     <ion-content>
-        <ion-list>
-
+        <ion-list can-swipe="true">
             <div class="item item-input-inset">
                 <label class="item-input-wrapper">
                     <input type="text" placeholder="New List" ng-model="listsCtrl.newListName">
@@ -12,9 +11,8 @@
                 </button>
             </div>
             <ion-item ng-repeat="list in listsCtrl.lists" href="#/app/list/{{list.id}}">
-                <div class="item item-input-inset"  on-swipe-left="listsCtrl.removeList(list)">
-                    <label class="item-input-wrapper" style="background: none; cursor: pointer">{{list.listName}}</label>
-                </div>
+                {{list.listName}}
+                <ion-option-button class="button-assertive icon ion-trash-a" ng-click="listsCtrl.removeList(list)"></ion-option-button>
             </ion-item>
         </ion-list>
     </ion-content>

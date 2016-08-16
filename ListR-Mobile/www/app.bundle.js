@@ -205,7 +205,7 @@ angular.module('listr.itemList.controller', [])
 
 
     function removeItem(item) {
-
+        console.log(item);
         itemListService.deleteItem(item).then(() => {
             var index = _.findIndex(ctrl.items, { name: item.name });
             ctrl.items.splice(index, 1);
@@ -248,9 +248,16 @@ angular.module('listr.itemList.controller', [])
     }
 
     function quantityDown(item) {
-        item.quantity = item.quantity - 1;
-        onUpdate();
-        itemListService.editItem(item);
+        let newQuantity = item.quantity - 1;
+        if (newQuantity > 0) {
+            item.quantity = item.quantity - 1;
+            onUpdate();
+            itemListService.editItem(item);
+        } else {
+            removeItem(item);
+        }
+
+        
     }
 
     function addUsersToList() {
@@ -309,11 +316,12 @@ angular.module('listr.itemList', ['listr.itemList.controller', 'listr.itemList.s
 })();
 
 angular.module('listr.lists.controller', [])
-  .controller('listsCtrl', function ($scope, listsService, user, $ionicLoading) {
+  .controller('listsCtrl', function ($scope, listsService, user, $ionicLoading, $ionicListDelegate) {
         let ctrl = this;
         ctrl.lists = [];
         ctrl.newListName = "";
         ctrl.addList = addList;
+
         ctrl.quickAddList = quickAddList;
         ctrl.removeList = removeList;
 
@@ -328,8 +336,7 @@ angular.module('listr.lists.controller', [])
                 $ionicLoading.hide();
             });
         }
-
-
+      
         function quickAddList() {
             if (ctrl.newListName !== "" && !_.find(ctrl.lists, { name: ctrl.newListName })) {
                 var list = { 'listName': ctrl.newListName};
@@ -346,11 +353,11 @@ angular.module('listr.lists.controller', [])
         }
 
         function removeList(list) {
-            console.log(list);
             listsService.deleteList(list).then(() => {
-                var index = _.findIndex(ctrl.lists, { name: list.name });
+                var index = _.findIndex(ctrl.lists, { listName: list.listName });
                 ctrl.lists.splice(index, 1);
             });
+            $ionicListDelegate.closeOptionButtons();
         }
   });
 

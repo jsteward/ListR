@@ -1,1 +1,4 @@
 /* Empty. Add your own CSS if you like */
+ion-item.item.item-button-right.item-complex.item-right-editable {
+    padding-right: 0;
+}

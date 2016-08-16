@@ -1,9 +1,10 @@
 ﻿angular.module('listr.lists.controller', [])
-  .controller('listsCtrl', function ($scope, listsService, user, $ionicLoading) {
+  .controller('listsCtrl', function ($scope, listsService, user, $ionicLoading, $ionicListDelegate) {
         let ctrl = this;
         ctrl.lists = [];
         ctrl.newListName = "";
         ctrl.addList = addList;
+
         ctrl.quickAddList = quickAddList;
         ctrl.removeList = removeList;
 
@@ -18,8 +19,7 @@
                 $ionicLoading.hide();
             });
         }
-
-
+      
         function quickAddList() {
             if (ctrl.newListName !== "" && !_.find(ctrl.lists, { name: ctrl.newListName })) {
                 var list = { 'listName': ctrl.newListName};
@@ -36,10 +36,10 @@
         }
 
         function removeList(list) {
-            console.log(list);
             listsService.deleteList(list).then(() => {
-                var index = _.findIndex(ctrl.lists, { name: list.name });
+                var index = _.findIndex(ctrl.lists, { listName: list.listName });
                 ctrl.lists.splice(index, 1);
             });
+            $ionicListDelegate.closeOptionButtons();
         }
   });

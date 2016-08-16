@@ -6,7 +6,7 @@
     </ion-nav-buttons>
     
     <ion-content>
-        <ion-list>
+        <ion-list can-swipe="true">
             <div class="item item-input-inset">
                 <label class="item-input-wrapper">
                     <input type="text" placeholder="New Item" ng-model="itemCtrl.newItemName">
@@ -15,17 +15,17 @@
                     Add
                 </button>
             </div>
-            <ion-item ng-repeat="item in itemCtrl.items">
-                <div class="item item-input-inset" style="cursor: pointer" on-swipe-left="itemCtrl.removeItem(item)">
-                    <label class="item-input-wrapper" style="background: none; cursor: pointer">{{item.name}}</label>
-                    <button class="button button-small button-balanced" ng-click="itemCtrl.quantityUp(item)">
-                        <i class="icon ion-plus-round"></i>
+            <ion-item ng-repeat="item in itemCtrl.items" class="item item-button-right">
+
+                {{item.name}}
+                <div class="buttons">
+                    <button class="button button-balanced icon ion-plus-round" ng-click="itemCtrl.quantityUp(item)">
                     </button>
                     <span style="align-content: center; padding: 10px">{{item.quantity}}</span>
-                    <button class="button button-small button-assertive" style="margin: 0;" ng-click="itemCtrl.quantityDown(item)">
-                        <i class="icon ion-minus-round"></i>
+                    <button class="button button-assertive icon ion-minus-round" ng-click="itemCtrl.quantityDown(item)">
                     </button>
                 </div>
+                <ion-option-button class="button-assertive icon ion-trash-a" ng-click="itemCtrl.removeItem(item)"></ion-option-button>
             </ion-item>
         </ion-list>
     </ion-content>

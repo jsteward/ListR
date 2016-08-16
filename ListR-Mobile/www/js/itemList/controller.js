@@ -20,7 +20,7 @@
 
 
     function removeItem(item) {
-
+        console.log(item);
         itemListService.deleteItem(item).then(() => {
             var index = _.findIndex(ctrl.items, { name: item.name });
             ctrl.items.splice(index, 1);
@@ -63,9 +63,16 @@
     }
 
     function quantityDown(item) {
-        item.quantity = item.quantity - 1;
-        onUpdate();
-        itemListService.editItem(item);
+        let newQuantity = item.quantity - 1;
+        if (newQuantity > 0) {
+            item.quantity = item.quantity - 1;
+            onUpdate();
+            itemListService.editItem(item);
+        } else {
+            removeItem(item);
+        }
+
+        
     }
 
     function addUsersToList() {
