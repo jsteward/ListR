@@ -27,12 +27,16 @@ gulp.task('sass', function(done) {
     .on('end', done);
 });
 
+
+
 gulp.task('build-vendor', function () {
     return gulp.src([
         './www/lib/angular/angular.js',
         './www/lib/angular-route/angular-route.js',
         './www/lib/lodash/dist/lodash.js',
-        './www/lib/angular-resource/angular-resource.js'
+        './www/lib/angular-resource/angular-resource.js',
+        './www/lib/ng-cordova-oauth/dist/ng-cordova-oauth.js',
+        './www/lib/ngCordova/dist/ng-cordova.js'
     ])
       .pipe(concat('vendor.bundle.js'))
       .pipe(gulp.dest('./www/'));

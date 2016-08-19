@@ -19,7 +19,15 @@
     "cordova-plugin-console",
     "cordova-plugin-whitelist",
     "cordova-plugin-statusbar",
-    "ionic-plugin-keyboard"
+    "ionic-plugin-keyboard",
+    {
+      "variables": {
+        "APP_ID": "309438982739069",
+        "APP_NAME": "ListR"
+      },
+      "locator": "cordova-plugin-facebook4",
+      "id": "cordova-plugin-facebook4"
+    }
   ],
   "cordovaPlatforms": []
 }

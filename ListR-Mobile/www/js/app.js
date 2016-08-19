@@ -10,7 +10,9 @@ angular.module('listr', [
         'listr.lists',
         'listr.itemList',
         'listr.login',
-        'ngResource'
+        'ngResource',
+        'ngCordova',
+        'ngCordovaOauth'
     ])
     .run(function($ionicPlatform, $timeout, $state, $ionicLoading) {
         $ionicPlatform.ready(function() {

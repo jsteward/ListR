@@ -10,7 +10,9 @@ angular.module('listr', [
         'listr.lists',
         'listr.itemList',
         'listr.login',
-        'ngResource'
+        'ngResource',
+        'ngCordova',
+        'ngCordovaOauth'
     ])
     .run(function($ionicPlatform, $timeout, $state, $ionicLoading) {
         $ionicPlatform.ready(function() {
@@ -183,6 +185,183 @@ angular.module('starter.controllers', [])
 //        });
 
 //})();
+angular.module('listr.lists.controller', [])
+  .controller('listsCtrl', function ($scope, listsService, user, $ionicLoading, $ionicListDelegate) {
+        let ctrl = this;
+        ctrl.lists = [];
+        ctrl.newListName = "";
+        ctrl.addList = addList;
+
+        ctrl.quickAddList = quickAddList;
+        ctrl.removeList = removeList;
+
+        $scope.$on('$ionicView.enter', init);
+
+        function init() {
+            $ionicLoading.show({
+                template: 'Loading...'
+            });
+            listsService.getAllLists(user).then((resp) => {
+                ctrl.lists = resp;
+                $ionicLoading.hide();
+            });
+        }
+      
+        function quickAddList() {
+            if (ctrl.newListName !== "" && !_.find(ctrl.lists, { name: ctrl.newListName })) {
+                var list = { 'listName': ctrl.newListName};
+                ctrl.addList(list);
+            }
+
+        }
+
+        function addList(newList) {
+            listsService.addList(newList).then((resp) => {
+                ctrl.lists.unshift(resp);
+                ctrl.newListName = "";
+            });
+        }
+
+        function removeList(list) {
+            listsService.deleteList(list).then(() => {
+                var index = _.findIndex(ctrl.lists, { listName: list.listName });
+                ctrl.lists.splice(index, 1);
+            });
+            $ionicListDelegate.closeOptionButtons();
+        }
+  });
+
+angular.module('listr.lists', ['listr.lists.controller', 'listr.lists.service']);
+
+
+(function () {
+    function listsService($resource) {
+
+        var url = 'http://localhost:50779/api/lists/:listId';
+        var svc = this;
+        var settings = { cache: true, isArray: true };
+
+        var resource = $resource(url, { }, { update: { method: 'PUT' } }, settings);
+
+        svc.addList = addList;
+
+        svc.deleteList = deleteList;
+
+        svc.getAllLists = getAllLists;
+
+        function addList(list) {
+            return resource.save(list).$promise;
+        }
+
+        function deleteList(list) {
+            return resource.delete({ 'listId': list.id }).$promise;
+        }
+
+        function getAllLists(user) {
+            return resource.query({ 'userId': user.userId }).$promise;
+        }
+    }
+
+    angular.module('listr.lists.service', [])
+        .service('listsService', listsService);
+
+})();
+
+
+angular.module('listr.login.controller', [])
+    .controller('loginCtrl', function ($scope, $ionicModal, $timeout, user, $state, $cordovaOauth) {
+        let ctrl = this;
+
+        ctrl.loginData = {};
+        ctrl.login = login;
+        
+        function login() {
+            let clientId = 309438982739069;
+            let options = { redirect_uri : 'http://localhost:4400/callback'};
+            //$cordovaOauth.facebook(clientId, ["email", "user_friends", "public_profile"], options).then(function (result) {
+                //$localStorage.accessToken = result.access_token;
+                //$location.path("/profile");
+            //    console.log(result);
+            //}, function (error) {
+           //     alert("There was a problem signing in!  See the console for logs");
+           //     console.log(error);
+           // });
+
+
+            
+
+            ctrl.loginData.id = 1;
+            ctrl.loginData.uuid = device.uuid;
+
+
+            // Simulate a login delay. Remove this and replace with your login
+            // code if using a login system
+
+
+            $timeout(function () {
+                var fakeUser = { firstName: 'Jacques', lastName: 'Steward', userId: 1, emailAddress: 'jacques.steward@gmail.com', FacebookId: '', uuid: device.uuid };
+                angular.extend(user, fakeUser);
+                $state.go('app.lists');
+            }, 1000);
+
+        }
+
+    });
+angular.module('listr.login', ['listr.login.controller', 'listr.login.service']);
+
+(function () {
+    function loginService($resource) {
+
+        //var url = 'http://localhost:50779/api/lists/:listId';
+        //var svc = this;
+
+        ////var url = '/api/lists/:listId/items/:itemId';
+        //var settings = { cache: true, isArray: true };
+
+        //var resource = $resource(url, {}, { update: { method: 'PUT' } }, settings);
+
+        //svc.addList = addList;
+
+        ////svc.editItem = editItem;
+
+        //svc.deleteList = deleteList;
+
+        //svc.getAllLists = getAllLists;
+
+        ////svc.getItem = getItem;
+
+        //function addList(list) {
+        //    return resource.save(list).$promise;
+        //}
+
+        //function editItem(item) {
+        //    console.log(item);
+        //    return resource.update(item).$promise;
+
+
+        //}
+
+        //function deleteList(list) {
+        //    return resource.delete({ 'listId': list.id }).$promise;
+        //}
+
+
+
+        //function getAllLists() {
+        //    return resource.query().$promise;
+        //}
+    }
+
+    angular.module('listr.login.service', [])
+        .service('loginService', loginService);
+
+})();
+angular.module('listr.user.controller', [])
+    .controller('userCtrl', function($scope) {
+        let ctrl = this;
+    });
+
+angular.module('listr.user', ['listr.user.controller']);
 angular.module('listr.itemList.controller', [])
 
 .controller('itemCtrl', function ($scope, $stateParams, itemListService, $ionicLoading) {
@@ -314,165 +493,3 @@ angular.module('listr.itemList', ['listr.itemList.controller', 'listr.itemList.s
     angular.module('listr.itemList.service', [])
         .service('itemListService', itemListService);
 })();
-
-angular.module('listr.lists.controller', [])
-  .controller('listsCtrl', function ($scope, listsService, user, $ionicLoading, $ionicListDelegate) {
-        let ctrl = this;
-        ctrl.lists = [];
-        ctrl.newListName = "";
-        ctrl.addList = addList;
-
-        ctrl.quickAddList = quickAddList;
-        ctrl.removeList = removeList;
-
-        $scope.$on('$ionicView.enter', init);
-
-        function init() {
-            $ionicLoading.show({
-                template: 'Loading...'
-            });
-            listsService.getAllLists(user).then((resp) => {
-                ctrl.lists = resp;
-                $ionicLoading.hide();
-            });
-        }
-      
-        function quickAddList() {
-            if (ctrl.newListName !== "" && !_.find(ctrl.lists, { name: ctrl.newListName })) {
-                var list = { 'listName': ctrl.newListName};
-                ctrl.addList(list);
-            }
-
-        }
-
-        function addList(newList) {
-            listsService.addList(newList).then((resp) => {
-                ctrl.lists.unshift(resp);
-                ctrl.newListName = "";
-            });
-        }
-
-        function removeList(list) {
-            listsService.deleteList(list).then(() => {
-                var index = _.findIndex(ctrl.lists, { listName: list.listName });
-                ctrl.lists.splice(index, 1);
-            });
-            $ionicListDelegate.closeOptionButtons();
-        }
-  });
-
-angular.module('listr.lists', ['listr.lists.controller', 'listr.lists.service']);
-
-
-(function () {
-    function listsService($resource) {
-
-        var url = 'http://localhost:50779/api/lists/:listId';
-        var svc = this;
-        var settings = { cache: true, isArray: true };
-
-        var resource = $resource(url, { }, { update: { method: 'PUT' } }, settings);
-
-        svc.addList = addList;
-
-        svc.deleteList = deleteList;
-
-        svc.getAllLists = getAllLists;
-
-        function addList(list) {
-            return resource.save(list).$promise;
-        }
-
-        function deleteList(list) {
-            return resource.delete({ 'listId': list.id }).$promise;
-        }
-
-        function getAllLists(user) {
-            return resource.query({ 'userId': user.userId }).$promise;
-        }
-    }
-
-    angular.module('listr.lists.service', [])
-        .service('listsService', listsService);
-
-})();
-
-
-angular.module('listr.login.controller', [])
-    .controller('loginCtrl', function ($scope, $ionicModal, $timeout, user, $state) {
-        let ctrl = this;
-
-        ctrl.loginData = {};
-        ctrl.login = login;
-        
-        function login() {
-            ctrl.loginData.id = 1;
-            ctrl.loginData.uuid = device.uuid;
-            // Simulate a login delay. Remove this and replace with your login
-            // code if using a login system
-
-
-            $timeout(function () {
-                var fakeUser = { firstName: 'Jacques', lastName: 'Steward', userId: 1, emailAddress: 'jacques.steward@gmail.com', FacebookId: '', uuid: device.uuid };
-                angular.extend(user, fakeUser);
-                $state.go('app.lists');
-            }, 1000);
-
-        }
-
-    });
-angular.module('listr.login', ['listr.login.controller', 'listr.login.service']);
-
-(function () {
-    function loginService($resource) {
-
-        //var url = 'http://localhost:50779/api/lists/:listId';
-        //var svc = this;
-
-        ////var url = '/api/lists/:listId/items/:itemId';
-        //var settings = { cache: true, isArray: true };
-
-        //var resource = $resource(url, {}, { update: { method: 'PUT' } }, settings);
-
-        //svc.addList = addList;
-
-        ////svc.editItem = editItem;
-
-        //svc.deleteList = deleteList;
-
-        //svc.getAllLists = getAllLists;
-
-        ////svc.getItem = getItem;
-
-        //function addList(list) {
-        //    return resource.save(list).$promise;
-        //}
-
-        //function editItem(item) {
-        //    console.log(item);
-        //    return resource.update(item).$promise;
-
-
-        //}
-
-        //function deleteList(list) {
-        //    return resource.delete({ 'listId': list.id }).$promise;
-        //}
-
-
-
-        //function getAllLists() {
-        //    return resource.query().$promise;
-        //}
-    }
-
-    angular.module('listr.login.service', [])
-        .service('loginService', loginService);
-
-})();
-angular.module('listr.user.controller', [])
-    .controller('userCtrl', function($scope) {
-        let ctrl = this;
-    });
-
-angular.module('listr.user', ['listr.user.controller']);

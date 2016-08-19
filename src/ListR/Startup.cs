@@ -33,7 +33,9 @@ namespace ListR
         {
             // Add framework services.
             services.AddMvc();
-            var connection = "Server=C06395\\SQLEXPRESS;Database=ListR;Trusted_Connection=True;;MultipleActiveResultSets=true";
+            //var connection = "Server=C06395\\SQLEXPRESS;Database=ListR;Trusted_Connection=True;;MultipleActiveResultSets=true";
+            var connection =
+               "Server=tcp:listr-staging.database.windows.net,1433;Initial Catalog=ListR;Persist Security Info=False;User ID=jsteward;Password=Alex1994;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
             services
                 .AddEntityFramework()
                 .AddEntityFrameworkSqlServer()
